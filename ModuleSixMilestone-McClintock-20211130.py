@@ -50,16 +50,23 @@ room_items = {
     'Dining Hall': {'Peasants': 'Burninate'},
     'Kitchen': {'Keeper of Trogdor': 'TrogShield'},
     'Throne Antechamber': {'Kerrek': 'Villain'},
-    'Throne Room': {'Keeper of Trogdor': 'TrogSword'}
+    'Throne Room': {'Keeper of Trogdor': 'TrogSword'},
+    'Bedroom': {'Nothing': 'Nothing'}
 }
 
 
-# FIXME #Get dictionary Functionality Fixed (Current Priority)
 def print_room_items():
     room_item = room_items.get(curr_room)
+
     for person, item in room_item.items():
-        if (item.lower() == 'villain'):
+        if item.lower() == 'villain':
             print('You see a ' + str(person) + ". Better watch out!")
+        elif item.lower() == 'burninate':
+            print('You see some ' + person + "... Perhaps you should do what you do best and " + item.upper() + "?!?")
+        elif item.lower() == 'nothing':
+            print(item + ' to see here. Let\'s get to burninating!')
+        elif person.lower() == 'keeper of trogdor':
+            print('You see a ' + person + '. Perhaps you should talk to them.')
         else:
             continue  # If not a match, continue to the next iteration in the list
 
@@ -80,14 +87,16 @@ def print_inventory():
         print(str(item) + ': ' + str(has_item))  # Print each key, item pair
 
 
-# FIXME #Once room_items is up & running, verify functionality and adjust as necessary
+# FIXME #Get logic in main to work, then verify functionality
 def get_item(item):
     for inv_item, has_item in inventory.items():
-        if(inv_item.lower() == item):
+        if inv_item.lower() == item:
             if has_item.lower() == 'not burninated':
-                inventory.update(item, 'BURNINATED!')
+                inventory[inv_item] = 'BURNINATED!!!'
+                continue
             elif has_item.lower() == 'no':
-                inventory.update(item, 'Yes')
+                inventory[inv_item] = 'Yes'
+                continue
             else:
                 continue
         else:
@@ -100,20 +109,28 @@ def main():
     curr_room = 'Bedroom'  # Initialize the variable curr_room
     pot_room = 'Bedroom'  # Initialize the variable for potential rooms the player can move to based on current room.
 
-    while ((pot_room.lower() != 'exit')):  # Make sure that the user isn't trying to exit the game.
-        if((pot_room.lower()) == 'exit'):
+    while pot_room.lower() != 'exit':  # Make sure that the user isn't trying to exit the game.
+        if (pot_room.lower()) == 'exit':
             print('Trogdor the Burninator bids you farewell! Go forth & Burninate!')
             break
+
+        elif pot_room.lower().__contains__('burninate'):
+            if pot_room.lower().__contains__('peasants'):
+                get_item('peasants')
+            elif pot_room.lower().__contains__('cottages'):
+                get_item('thatched roof cottages')
+            else:
+                continue
 
         else:
 
             print_curr_room()  # Print the current room that the player is in as well as the rooms they can move to.
-            #print_room_items() #FIXME
+            print_room_items()  # Print people/items in each of the rooms.
 
             pot_room = input('Type Exit to quit. Type Inventory to view Inventory.' + '\n')
             # Get input from user (which room they want to move to).
 
-            if(pot_room.lower() == 'inventory'):
+            if pot_room.lower() == 'inventory':
                 print_inventory()
             else:
                 curr_room = move_room(pot_room)  # Move to the requested room.
